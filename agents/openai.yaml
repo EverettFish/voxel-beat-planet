@@ -1,0 +1,7 @@
+interface:
+  display_name: "Voxel Beat Planet"
+  short_description: "Build unique reactive voxel planets from songs"
+  brand_color: "#E84C2A"
+  default_prompt: "Use $voxel-beat-planet to turn this MP3 and scene description into a unique interactive voxel planet."
+policy:
+  allow_implicit_invocation: true

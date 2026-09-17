@@ -1,0 +1,12 @@
+# User-owned audio is embedded locally but must not be published by default.
+**/assets/music.*
+**/assets/track.local.js
+
+# Generated captures and local tooling.
+captures/
+tmp/
+/demo/
+.DS_Store
+Thumbs.db
+__pycache__/
+*.pyc

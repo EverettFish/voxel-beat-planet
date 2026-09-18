@@ -1,86 +1,35 @@
 # Voxel Beat Planet
 
-## Give a song a planet.
+**Give any song a one-of-a-kind, music-reactive Three.js voxel planet — whose weather, light and season change as the song plays.**
 
-Drop in an MP3. Add one sentence—or add nothing at all. The skill listens for the pulse, reads the available song context, and designs a whole voxel world that could belong to that track and no other.
+An agent skill. It does not recolour a template: it reads the song, designs a world for it, builds that world at model-railway detail, and checks its own work from screenshots.
 
-Not a green ball with speakers glued on.  
-Not an equalizer bent into a sphere.  
-Not the same moon base wearing a different palette.
+## What's new in v2
+- **Reusable engine** in `assets/engine/` (planet shader, baked-AO voxel builder, anchors + instancing, climate, weather, sky, audio analysis, UI) with runnable starter templates for the song-specific files.
+- **Climate timeline**: chapters placed at the song's real section boundaries drive sky, sun, haze, clouds, wind, rain, snow, wet ground, frost line, lake ice, lights, stars, aurora and foliage.
+- **Craft standards**: one shared fine voxel unit, feature-part checklists per category, layered solid/glow/snow packs, a kit turntable for approving models off-planet.
+- **Layout gate**: `check_layout.js` rejects overlaps, rings cutting districts and empty hemispheres.
+- **Pole-safe placement**: districts can sit exactly on either pole and equatorial rings no longer produce degenerate tangent frames.
+- **Screenshot-driven QA**: `shot.py` + debug parameters + a delivery checklist; `validate_project.py` enforces the rules that can be automated.
+- **Built-in playback gate**: generated sites must contain their authorised track and play it after one start-button click—no viewer upload step.
+- **Lessons learned** from nine rounds of real feedback.
 
-The result might be a midnight disco city wrapped in railway lines, a winter ocean planet crossed by migrating lanterns, a dusty red broadcast colony, or a daylight carnival whose streets fold around the poles. Time of day, season, surface type, architecture, people, transport, typography, weather, and choreography are all decided again for every song.
+## Layout
+```
+SKILL.md
+references/   scene-design · craft-standards · climate-timeline · music-mapping · performance · qa-checklist · lessons-learned
+scripts/      analyze_audio.py · embed_audio.py · check_layout.js · shot.py · validate_project.py
+assets/engine/  index.html · css/ · js/ (engine) · templates/ (starters for bespoke files) · vendor/three.min.js
+```
+The skill ships no audio, no video and no finished scene.
 
-## The promise
+## Install
+Copy this folder into your agent's skills directory (e.g. `~/.claude/skills/voxel-beat-planet` or `$CODEX_HOME/skills/voxel-beat-planet`), then ask: *"Use $voxel-beat-planet to make a planet for <song>."*
 
-- **One song, one world.** Every run begins with a new scene bible and scene manifest.
-- **Readable from orbit.** Roughly 100,000 deliberately large surface voxels make the wave motion and landmarks visible without zooming.
-- **A full sphere, not a pretty front.** Every hemisphere and pole receives authored regions, buildings, characters, transport, and events.
-- **Waves that travel.** Bass creates visible crests and troughs with spatial phase delay—not a camera shake disguised as music response.
-- **Different things do different things.** Trains accelerate, crowds change pose, doors open, light sweeps chase, signs lift stroke by stroke, and landmarks transform by section.
-- **Song identity can become geography.** When appropriate, the title may be carved into the surface in monumental voxel lettering or the artist may become a stylized hero landmark.
-- **The engine is reusable; the answer is not.** Chunk rendering, audio analysis, culling, controls, and voxel primitives persist. The world design does not.
-
-## What goes in
-
-\`\`\`text
-required:  an MP3, WAV, OGG, M4A, FLAC, or AAC file
-optional:  a scene description, visual constraints, motifs, or exclusions
-\`\`\`
-
-If the prompt is sparse, the skill uses metadata and audible evidence—tempo, groove, energy arc, density, timbre, and era—to propose the most fitting world. It does not invent or reproduce song lyrics.
-
-## What comes out
-
-\`\`\`text
-interactive-planet/
-├─ index.html
-├─ scene-bible.md
-├─ js/
-│  ├─ scene-manifest.js   # unique world decisions
-│  ├─ terrain.js          # unique surface and traveling wave masks
-│  ├─ scene.js            # unique landmarks, population, vehicles, events
-│  ├─ planet.js           # reusable chunked voxel renderer
-│  ├─ audio.js            # reusable Web Audio analysis
-│  └─ ...
-└─ assets/
-\`\`\`
-
-The page includes orbit and zoom controls, play/pause, volume, drag-to-replace audio, loading feedback, reduced-motion support, and optional diagnostics.
-
-## Use the skill
-
-Copy this repository into your Codex skills directory, then ask:
-
-\`\`\`text
-Use $voxel-beat-planet with this MP3.
-Build a stormy night-time railway world about missed connections.
-Make the wave motion obvious from the full-planet view.
-\`\`\`
-
-Or provide only the audio:
-
-\`\`\`text
-Use $voxel-beat-planet with this MP3 and design the scene from the song.
-\`\`\`
-
-The skill first writes the world design, then builds and validates the webpage.
-
-## Performance architecture
-
-The default surface is \`6 × 132² = 104,544\` large voxels. A cube-sphere is split into chunks and rendered with compact instanced attributes. Position, orientation, displacement, and lighting are reconstructed in the vertex shader. CPU horizon culling, Three.js frustum culling, and GPU back-face culling work together; repeated scene props use \`InstancedMesh\`.
-
-The smaller shell is intentional: the visual budget belongs to the song-specific city, characters, vehicles, lettering, portraiture, and set pieces—not to millions of tiny terrain cubes that disappear at orbit distance.
-
-## Included tools
-
-- \`scripts/analyze_audio.py\` — dependency-light audio/metadata profile using FFmpeg.
-- \`scripts/embed_audio.py\` — creates a local JavaScript audio payload when the user has the right to use the track.
-- \`scripts/validate_project.py\` — checks structure, large-voxel defaults, spatial wave evidence, scene-manifest completeness, instancing, and forbidden unfinished placeholders.
+## Requirements for the scripts
+`node` (layout check, validation) · `python3` + `numpy` + `ffmpeg` (audio analysis) · `playwright` + chromium (screenshots).
 
 ## Audio and copyright
+The reusable skill ships no song. For each generated website, `embed_audio.py` writes the user-supplied track into `assets/track.js`, so the delivered page plays it without asking the viewer to upload anything. Do not publish that generated audio payload without redistribution rights. Lyrics are used as imagery only and never reproduced.
 
-Audio stays local by default. The repository ignores embedded and source music files, and public projects should not redistribute copyrighted recordings without permission. Generated scene code can name a track and respond to it without shipping the recording.
-
-## License
-
-MIT. Build strange little worlds.
+MIT License. Three.js is MIT (see `assets/engine/vendor/LICENSE-three.txt`).

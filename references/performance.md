@@ -1,33 +1,12 @@
-# Performance contract
+# Performance
 
-## Surface shell
+Targets: 60 fps on a mid-range laptop GPU at N = 192; ≤ ~2.5 M triangles and ≤ ~300 draw calls in a typical view (`I` opens the stats panel; `shot.py` prints `INFO calls/tris`).
 
-- Default grid: `N=132`, exactly `6 * N * N = 104,544` large surface voxels.
-- Keep the planet radius around 72–84 world units so a surface voxel is visually substantial and hero props can occupy 10–35% of the diameter.
-- Partition every cube-sphere face into chunks; `CHUNK=22` yields 216 chunks. Other divisors are valid when they preserve useful chunk-level culling.
-- Use one shared indexed five-face voxel geometry and one shared material.
-- Store compact per-instance direction/height/color/reactivity attributes. Reconstruct position, tangent basis, displacement, and lighting in the vertex shader.
-- Do not allocate an `instanceMatrix` for the planet surface.
-
-## Culling
-
-Use all three layers:
-
-1. CPU horizon/back-side culling at chunk granularity.
-2. Three.js frustum culling with conservative chunk bounding spheres.
-3. GPU triangle back-face culling with front-side material.
-
-Keep region props spatially grouped. Use `InstancedMesh` for repeated song-specific props such as dancers, lights, speakers, vehicles, title voxels, track sleepers, stage decorations, or crowd members. Do not add generic vegetation or buildings merely to raise density.
-
-## Budgets
-
-- Cap device pixel ratio at 1.5 by default.
-- Avoid real-time shadows; fake contact shadows and baked face shading are usually clearer for voxel art.
-- Target fewer than 220 visible draw calls from the default camera and fewer than 140 close to the surface.
-- Reuse geometries and materials; update instance matrices only for classes that visibly move.
-- Keep expensive FFT work out of the render loop.
-- Spend the saved surface-voxel budget on readable landmarks, characters, architecture, lettering, vehicles, and distinct animations distributed across all six faces.
-
-## Verification
-
-Expose an `i` diagnostics panel showing FPS, draw calls, total/visible chunks, and audio features. Test at whole-planet and close-detail distances in current Chrome with hardware acceleration. First inspect a full 360-degree rotation at the default distance: every side must stay dense, large props must remain legible, and a traveling crest must be obvious without zoom. A passing syntax check is not a rendering test.
+- **Planet**: 6·N² instanced voxels, 16 bytes each, per-chunk horizon culling. Default N = 192 (221 k); `?n=144` for weak machines. Voxel size derives from N.
+- **Models**: face-culled merged geometry with baked AO. Crowns, balloons and other blobs get a **solid core** so inner faces are culled — this alone halved the triangle count of the reference planet.
+- **Instancing**: anything that appears ≥ 4 times goes into an `InstSet`; layers share one matrix buffer. Trees are bucketed by octant and whole buckets are skipped (no update, not drawn) when they face away.
+- **Anchors**: terrain is sampled once at build time. Per frame an object costs one `waveAt()` and one matrix compose. Static sets (track, signals) are written once with `dynamic = false`.
+- **Particles**: `mesh.count = active`; only active particles are updated.
+- **Lights**: no real point lights. 16 shader light pools + 4 range-faded spot slots in the planet shader; glow is unlit material colour.
+- **Adaptive**: `main.js` drops the pixel ratio to 1 after 3 s below 28 fps.
+- Avoid per-frame allocation in `update()`; reuse module-level vectors/quaternions. Use the seeded rng so screenshots are reproducible.

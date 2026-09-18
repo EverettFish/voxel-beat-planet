@@ -1,0 +1,1 @@
+Starters for the song-specific files. Copy all six into `../js/` (kit.js may be split into kit-*.js; then update the module list in index.html), and replace their contents completely. They exist so the engine boots to a bare planet on the first run — `validate_project.py` fails any project that still contains the word STARTER.

@@ -6,7 +6,16 @@
 captures/
 tmp/
 /demo/
+node_modules/
 .DS_Store
 Thumbs.db
 __pycache__/
 *.pyc
+
+# Source media stays local unless the owner deliberately publishes it.
+*.mp3
+*.wav
+*.m4a
+*.flac
+*.mp4
+*.mov

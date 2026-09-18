@@ -1,52 +1,32 @@
-# Designing a planet that belongs to one song
+# Scene design
 
-## Evidence ladder
+## Diagnostic — answer all of these before writing code
 
-Use evidence in this order:
+**1. Mood → light and sky.** What hour and weather is this song? Derive sky, sun colour and elevation, ambient and haze from that answer. A wistful autumn ballad is a pale-blue afternoon with warm sun and drifting cloud; a midnight dance track is a neon night. Stars must obey the key light: in a daytime chapter they are at 0. The sky is never empty — clouds and birds by day, nebulae and meteors by night — and sky elements react to the music too.
 
-1. explicit user description and exclusions;
-2. user-provided lyrics, notes, artwork, or story context;
-3. audio metadata such as title, artist, album, and year;
-4. audible structure: tempo, groove, instrumentation, dynamics, density, and section changes;
-5. culturally recognizable high-level context that can be stated without reproducing protected text;
-6. original inference.
+**2. Where does the song go?** Name the arc from first bar to last (arrival → loss, dusk → dawn, calm → storm → calm). This becomes the climate timeline. A world that looks the same at 0:10 and 3:40 has not listened to the song.
 
-Label uncertain inference in the scene bible. Do not claim a lyric or story fact that was not provided or verified.
+**3. Palette from a real picture.** Name the concrete image the song evokes and sample from it (for an autumn campus song: gold grass, maple red, lake blue, sky cyan). Ground value > 60 %. Keep one high-contrast structural colour (paths, field rows, a road) so the ground has texture without looking dirty. Self-test: if an orbit screenshot reads as "one brown/black mass", re-do the palette.
 
-## Scene-bible checklist
+**4. Landmarks: silhouette first, fewer is better.** List the song's images. For each ask: *at five voxel-units wide, is the silhouette still nameable?* If not, enlarge it until it is, or delete it.
+- good silhouettes: grand piano (raised lid, legs, bench), pagoda (tiered taper), swing (frame + hanging seat + rider), ferris wheel, windmill, lighthouse, steam train, lake
+- bad silhouettes: picture frame, candle, wind chime, microphone — a pole with a small thing on it reads as noise from orbit. Use them only as close-up detail beside a real landmark.
+Quantity order: theme element everywhere (hundreds of leaves / lanterns / notes) > 10–16 districts > people as punctuation (≤ 16).
 
-Write a short, decisive document containing:
+**5. Motion per object.** Write the verb for each landmark: the swing swings, the mill turns, the beam sweeps, the train circles and the gates drop, the bell tolls, the boat drifts and freezes in. "Everything bobs together" is forbidden.
 
-- **One-line premise:** the emotional metaphor made spatial.
-- **Planet anatomy:** 6–10 named regions spread around all sides of the sphere. State what appears on the rear and poles; an attractive front with empty back faces fails.
-- **World state:** explicitly choose day/night/twilight, season, weather, atmosphere, and whether the surface is Earth-like, lunar, Martian, oceanic, mechanical, or invented. Base every choice on the music or prompt.
-- **Density plan:** what fills foreground, midground, skyline, and negative space.
-- **Population:** who lives or moves here, what they do, and how activity changes by section.
-- **Systems:** roads, rail, rivers, migration paths, weather, power, agriculture, industry, ritual, or other circulation appropriate to the premise.
-- **Hero events:** at least three readable transformations reserved for musically important moments.
-- **Camera story:** default silhouette, close-detail destinations, and one guided moment.
-- **Palette/materials:** dominant, support, and accent colors with a clear reason.
-- **Exclusions:** obvious clichés that would dilute this particular concept.
-- **Distant read:** list the five features that remain identifiable in the default whole-planet view without zoom.
-- **Typography/portrait decision:** when title or artist identity is known, decide whether monumental voxel lettering or a highly stylized portrait belongs on the sphere and how it moves.
+**6. Layout table first.** List every area (lat, lon, angular radius) and every ring (great-circle pole, half-width) in the manifest and run `check_layout.js`. Rules it enforces: edge gap between districts ≥ 0.04 rad; rings clear of districts unless the district declares `onRing`; every octant occupied; largest empty cap < 0.62 rad (fill anything > 0.5). Flattened low-`react` pads carry buildings; high-`react` wild land carries nature.
 
-## Uniqueness test
+**7. Far read.** Name the five things recognisable from the default orbit distance. One of them should be painted into the terrain itself (a mosaic, a court, field stripes, a road).
 
-Before implementation, answer:
+## Song → world translation
+- title and imagery → biomes, landmarks, the painted ground
+- era and place → architecture, vehicles, signage style, UI type
+- arrangement → what moves with what (see music-mapping)
+- structure → climate chapters and hero events
+- emotion → light, colour temperature, weather
 
-- Would the same terrain make sense under an unrelated song?
-- Are more than half the landmarks generic music symbols?
-- Is the world recognizable in a silent screenshot?
-- Does every region contain at least one living or mechanical behavior?
-- Are the busiest areas visible from the default camera?
-- Can a viewer see the surface wave's direction, crest, and delayed propagation from the default camera?
-- After a 180-degree rotation, is the opposite hemisphere equally authored and dense?
-- Is every tree, rock, house, speaker, vehicle, or crowd present for a song-specific reason rather than as filler?
+Every planet needs: a one-sentence premise, 10–16 districts on both hemispheres and both poles, 1–3 rings with something travelling on them, a hero district at lon 0, a second wave source elsewhere, inhabitants at named spots, ≥ 3 hero events tied to chapters, ≥ 5 camera targets, and clickable landmarks that *answer* (the swing goes higher, the train whistles, the piano sends a ripple).
 
-If the first two answers are yes or any later answer is no, redesign before coding.
-
-## Reusable versus bespoke
-
-Reusable: chunk renderer, cube-sphere mapping, shader interfaces, audio analysis, camera controls, UI, voxel primitive builder, placement math, culling, diagnostics.
-
-Bespoke: planet scale, surface type, time of day, season, weather, palette, terrain functions, traveling-wave fields, region masks, landmark geometry, inhabitants, vehicles, lettering, portraits, event choreography, light groups, camera targets, naming, copy, and scene manifest.
+## Districts worth stealing the structure of (never the content)
+hero hill or plaza · water body with something on it · a street of 10+ varied houses · an institutional building with a tower · a working landscape (fields, harbour, quarry) · a fairground or stage · a mountain with snowline · two distinct poles · 2–3 small hamlets that fill gaps · a station or crossing where rings meet.
